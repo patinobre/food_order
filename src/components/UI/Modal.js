@@ -7,7 +7,7 @@ const BackDrop = (props) => {
 
     // retorna o HTML/JSX
     return (
-        <div className={classes.backdrop} />
+        <div className={classes.backdrop} onClick={props.onClose} />
     );
 };
 
@@ -22,7 +22,7 @@ const ModalOverlay = (props) => {
     );
 };
 
-const portalElement = document.getElementById('overlays')
+const portalElement = document.getElementById('overlays');
 
 // cria o componente Modal
 const Modal = (props) => {
@@ -30,7 +30,7 @@ const Modal = (props) => {
     // retorna o HTML/JSX
     return (
         <Fragment>
-            {ReactDOM.createPortal(<BackDrop />, portalElement)}
+            {ReactDOM.createPortal(<BackDrop onClose={props.onClose} />, portalElement)}
             {ReactDOM.createPortal(<ModalOverlay>{props.children}</ModalOverlay>,
                 portalElement
             )}
