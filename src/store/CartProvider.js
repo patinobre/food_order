@@ -1,38 +1,36 @@
-// useReducer é semelhante ao useState, porém permite o gerenciamento de sates mais complexos
 import { useReducer } from 'react';
 import CartContext from './cart-context';
 
-
-// constante que armazena o estado do objeto na função reducer
-// inocialmente nao temos items nem amount
-// esse valor é modificado ao serem adicionados items e valores no Cart
 const defaultCartState = {
     items: [],
     totalAmount: 0
 };
 
-// constante recebe o valor da funçao reducer
-// funçao reducer deve estar fora do componente por que nao deve ser executada toda vez que o componente é rea valiado
-// a função reducer recebe 2 parâmetros,  um objeto que gerencia o stado e uma ação
-// o estado é o ultimo estado verificado pela funçao reducer
-// a açao é disparada posteriormente
-// como parte da função reducer, temos que retornar um novo estado
 const cartReducer = (state, action) => {
-    
-    //checamos se o tipo da açao equivale a ADD
     if(action.type === 'ADD') {
-
-        // caso o tipo da açao seja ADD, podemos adicionar o item no cart
-        // criamos um array para armazenar o estado vigente dos objetos
-        // chamamos o metodo concat() para adicionar um novo item ao array
-        // mas diferentemente do método push(), o metodo concat() retorna um novo array incluindo o item adicionado
-        const updatedItems = state.items.concat(action.item);
-        
-        // constante que armazenda o valor atualizado
-        //para isso pegamos a quantidade do antigo estado e aicionamos a expressao que retorna o preço multiplicado pela quantidade
         const updatedTotalAmount = state.totalAmount + action.item.price * action.item.amount;
         
-        // retornamos o novo estado do objeto
+        const existingCartItemIndex = state.items.findIndex(item => item.id === action.item.id
+        );
+        
+        const existingCartItem = state.items[existingCartItemIndex];
+        let updatedItem; 
+        let updatedItems; 
+
+        if (existingCartItem) {
+            updatedItem = {
+              ...existingCartItem,
+              amount: existingCartItem.amount + action.item.amount
+            };
+            updatedItems = [...state.items];
+            updatedItems[existingCartItemIndex] = updatedItem;
+        } else {
+            updatedItem = { ...action.item };
+            updatedItems = state.items.concat(updatedItem);
+        }
+
+        
+       
         return {
             items: updatedItems,
             totalAmount: updatedTotalAmount
@@ -41,8 +39,6 @@ const cartReducer = (state, action) => {
     return defaultCartState;
 };
 
-// cria o componente CartProvider
-// este é o componente que gerencia as informações do Cart
 const CartProvider = (props) => {
     
     // constante que armazena a funçao reducer
